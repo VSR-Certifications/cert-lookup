@@ -2,178 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Certification Lookup</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-      background: #f9f9f9;
+      padding: 20px;
     }
-    #vertex-search {
-      padding: 10px;
+    input {
       width: 100%;
-      max-width: 400px;
+      padding: 10px;
+      margin-bottom: 20px;
       font-size: 16px;
-      margin-bottom: 25px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
     }
-    #vertex-resultsContainer {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .vertex-cert-card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 15px 20px;
-      width: 280px;
-      transition: box-shadow 0.3s ease;
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
     }
-    .vertex-cert-card:hover {
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-    .vertex-cert-card h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 20px;
-      color: #333;
-    }
-    .vertex-cert-card p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #555;
-    }
-    .vertex-cert-card strong {
-      color: #222;
+    th {
+      background-color: #f4f4f4;
     }
   </style>
 </head>
 <body>
+
   <h1>Certification Lookup</h1>
+  <input type="text" id="search" placeholder="Search by Name, ID, or Certification..." />
 
-  <!-- Search input -->
-  <input
-    type="text"
-    id="vertex-search"
-    placeholder="Search certifications..."
-  />
+  <table id="certTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Business</th>
+        <th>Certification</th>
+        <th>Issue</th>
+        <th>Expire</th>
+        <th>In House Instructor</th>
+        <th>ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows inserted by JS -->
+    </tbody>
+  </table>
 
-  <!-- Container for results -->
-  <div id="vertex-resultsContainer">
-    <p>Enter search terms above to find certifications.</p>
-  </div>
+  <script src="script.js"></script>
 
-  <!-- Your script.js code here -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
-      const AIRTABLE_TABLE_NAME = "Table 1";
-      const AIRTABLE_API_KEY = "keyh12f4j0FAZl15E";
-
-      const AIRTABLE_ENDPOINT = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
-
-      const resultsContainer = document.getElementById("vertex-resultsContainer");
-      const searchInput = document.getElementById("vertex-search");
-
-      let allRecords = [];
-
-      async function fetchRecords(offset) {
-        let url = AIRTABLE_ENDPOINT + "?pageSize=100";
-        if (offset) url += `&offset=${offset}`;
-
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-          },
-        });
-
-        if (!response.ok) {
-          console.error("Failed to fetch Airtable data:", response.statusText);
-          return null;
-        }
-        return await response.json();
-      }
-
-      async function loadAllRecords() {
-        let offset = null;
-        let records = [];
-
-        do {
-          const data = await fetchRecords(offset);
-          if (!data) break;
-
-          records = records.concat(data.records);
-          offset = data.offset || null;
-        } while (offset);
-
-        return records;
-      }
-
-      function mapRecordToCertData(record) {
-        const fields = record.fields;
-        return {
-          Name: fields.Name || "",
-          Business: fields.Business || "",
-          Certification: fields.Certification || "",
-          Issue: fields.Issue || "",
-          Expire: fields.Expire || "",
-          "In House Instructor": fields["In House Instructor"] || "",
-          ID: fields.ID || "",
-        };
-      }
-
-      function renderTable(data) {
-        resultsContainer.innerHTML = "";
-
-        if (data.length === 0) {
-          resultsContainer.innerHTML = "<p>No results found.</p>";
-          return;
-        }
-
-        data.forEach(row => {
-          const card = document.createElement("div");
-          card.className = "vertex-cert-card";
-
-          card.innerHTML = `
-            <h3>${row.Name || "No Name"}</h3>
-            <p><strong>Business:</strong> ${row.Business || "N/A"}</p>
-            <p><strong>Certification:</strong> ${row.Certification || "N/A"}</p>
-            <p><strong>Issue Date:</strong> ${row.Issue || "N/A"}</p>
-            <p><strong>Expire Date:</strong> ${row.Expire || "N/A"}</p>
-            <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
-            <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
-          `;
-
-          resultsContainer.appendChild(card);
-        });
-      }
-
-      searchInput.addEventListener("input", (e) => {
-        const query = e.target.value.trim().toLowerCase();
-        if (!query) {
-          resultsContainer.innerHTML = "<p>Enter search terms above to find certifications.</p>";
-          return;
-        }
-        const filtered = allRecords
-          .map(mapRecordToCertData)
-          .filter(row =>
-            Object.values(row).some(val => val.toLowerCase().includes(query))
-          );
-
-        renderTable(filtered);
-      });
-
-      (async () => {
-        resultsContainer.innerHTML = "<p>Loading certifications...</p>";
-        allRecords = await loadAllRecords();
-        resultsContainer.innerHTML = "<p>Enter search terms above to find certifications.</p>";
-      })();
-    });
-  </script>
 </body>
 </html>
