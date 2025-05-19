@@ -1,58 +1,72 @@
-const airtableToken = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
-const baseId = "appkOBvixsfRHT7UM";
-const tableName = "Table 1";
-const tableBody = document.querySelector("#certTable tbody");
+document.addEventListener("DOMContentLoaded", function () {
+  const cardContainer = document.getElementById("cardContainer");
+  const searchInput = document.getElementById("search");
 
-let allRecords = [];
+  // Replace with your actual Airtable values
+  const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
+  const AIRTABLE_TABLE_NAME = "Table 1";
+  const AIRTABLE_TOKEN = "patREPLACE_THIS_WITH_YOURS";
 
-function fetchPage(offset = "") {
-  let url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}?pageSize=100`;
-  if (offset) url += `&offset=${offset}`;
+  async function fetchRecords() {
+    let allRecords = [];
+    let offset = "";
+    do {
+      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?pageSize=100&offset=${offset}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${AIRTABLE_TOKEN}`
+        }
+      });
+      const data = await response.json();
+      allRecords.push(...data.records);
+      offset = data.offset || "";
+    } while (offset);
+    return allRecords;
+  }
 
-  return fetch(url, {
-    headers: {
-      Authorization: `Bearer ${airtableToken}`
-    }
-  })
-    .then(res => res.json())
-    .then(data => {
-      allRecords.push(...data.records.map(r => r.fields));
-      if (data.offset) {
-        return fetchPage(data.offset);
-      }
-    });
-}
+  function renderCards(data) {
+    cardContainer.innerHTML = "";
 
-function renderTable(data) {
-  tableBody.innerHTML = "";
-  data.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.Name || ""}</td>
-      <td>${row.Business || ""}</td>
-      <td>${row.Certification || ""}</td>
-      <td>${row.Issue || ""}</td>
-      <td>${row.Expire || ""}</td>
-      <td>${row["In House Instructor"] || ""}</td>
-      <td>${row.ID || ""}</td>
-    `;
-    tableBody.appendChild(tr);
-  });
-}
-
-fetchPage().then(() => {
-  document.getElementById("search").addEventListener("input", e => {
-    const query = e.target.value.toLowerCase();
-    if (query.trim() === "") {
-      tableBody.innerHTML = "";
+    if (data.length === 0) {
+      cardContainer.innerHTML = "<p>No matching certifications found.</p>";
       return;
     }
 
-    const filtered = allRecords.filter(row =>
-      Object.values(row).some(
-        val => val && val.toLowerCase().includes(query)
+    data.forEach(record => {
+      const fields = record.fields;
+      const card = document.createElement("div");
+      card.className = "cert-card";
+      card.innerHTML = `
+        <h3>${fields.Name || "No Name"}</h3>
+        <p><strong>Business:</strong> ${fields.Business || ""}</p>
+        <p><strong>Certification:</strong> ${fields.Certification || ""}</p>
+        <p><strong>Issue Date:</strong> ${fields.Issue || ""}</p>
+        <p><strong>Expiration Date:</strong> ${fields.Expire || ""}</p>
+        <p><strong>In House Instructor:</strong> ${fields["In House Instructor"] || ""}</p>
+        <p><strong>ID:</strong> ${fields.ID || ""}</p>
+      `;
+      cardContainer.appendChild(card);
+    });
+  }
+
+  function filterCards(query, records) {
+    query = query.toLowerCase();
+    return records.filter(record =>
+      Object.values(record.fields).some(val =>
+        typeof val === "string" && val.toLowerCase().includes(query)
       )
     );
-    renderTable(filtered);
+  }
+
+  fetchRecords().then(records => {
+    renderCards([]);
+
+    searchInput.addEventListener("input", () => {
+      const filtered = filterCards(searchInput.value, records);
+      renderCards(filtered);
+    });
+  }).catch(error => {
+    cardContainer.innerHTML = "<p>Error loading data.</p>";
+    console.error(error);
   });
 });
