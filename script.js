@@ -33,7 +33,7 @@ function renderTable(data) {
       <td>${row.Certification || ""}</td>
       <td>${row.Issue || ""}</td>
       <td>${row.Expire || ""}</td>
-      <td>${row.Instructor || ""}</td>
+      <td>${row.In-House Instructor || ""}</td>
       <td>${row.ID || ""}</td>
     `;
     tableBody.appendChild(tr);
