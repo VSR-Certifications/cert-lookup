@@ -29,7 +29,6 @@ fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, 
       });
     }
 
-    renderTable(records);
 
     document.getElementById("search").addEventListener("input", e => {
       const query = e.target.value.toLowerCase();
