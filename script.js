@@ -1,104 +1,58 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
-  const AIRTABLE_TABLE_NAME = "Table 1";
-  const AIRTABLE_API_KEY = "keyh12f4j0FAZl15E";
+const airtableToken = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
+const baseId = "appkOBvixsfRHT7UM";
+const tableName = "Table 1";
+const tableBody = document.querySelector("#certTable tbody");
 
-  const AIRTABLE_ENDPOINT = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
+let allRecords = [];
 
-  const resultsContainer = document.getElementById("vertex-resultsContainer");
-  const searchInput = document.getElementById("vertex-search");
+function fetchPage(offset = "") {
+  let url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}?pageSize=100`;
+  if (offset) url += `&offset=${offset}`;
 
-  let allRecords = [];
-
-  async function fetchRecords(offset) {
-    let url = AIRTABLE_ENDPOINT + "?pageSize=100";
-    if (offset) url += `&offset=${offset}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-      },
-    });
-
-    if (!response.ok) {
-      console.error("Failed to fetch Airtable data:", response.statusText);
-      return null;
+  return fetch(url, {
+    headers: {
+      Authorization: `Bearer ${airtableToken}`
     }
-    return await response.json();
-  }
+  })
+    .then(res => res.json())
+    .then(data => {
+      allRecords.push(...data.records.map(r => r.fields));
+      if (data.offset) {
+        return fetchPage(data.offset);
+      }
+    });
+}
 
-  async function loadAllRecords() {
-    let offset = null;
-    let records = [];
+function renderTable(data) {
+  tableBody.innerHTML = "";
+  data.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.Name || ""}</td>
+      <td>${row.Business || ""}</td>
+      <td>${row.Certification || ""}</td>
+      <td>${row.Issue || ""}</td>
+      <td>${row.Expire || ""}</td>
+      <td>${row["In House Instructor"] || ""}</td>
+      <td>${row.ID || ""}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
 
-    do {
-      const data = await fetchRecords(offset);
-      if (!data) break;
-
-      records = records.concat(data.records);
-      offset = data.offset || null;
-    } while (offset);
-
-    return records;
-  }
-
-  function mapRecordToCertData(record) {
-    const fields = record.fields;
-    return {
-      Name: fields.Name || "",
-      Business: fields.Business || "",
-      Certification: fields.Certification || "",
-      Issue: fields.Issue || "",
-      Expire: fields.Expire || "",
-      "In House Instructor": fields["In House Instructor"] || "",
-      ID: fields.ID || "",
-    };
-  }
-
-  function renderTable(data) {
-    resultsContainer.innerHTML = "";
-
-    if (data.length === 0) {
-      resultsContainer.innerHTML = "<p>No results found.</p>";
+fetchPage().then(() => {
+  document.getElementById("search").addEventListener("input", e => {
+    const query = e.target.value.toLowerCase();
+    if (query.trim() === "") {
+      tableBody.innerHTML = "";
       return;
     }
 
-    data.forEach(row => {
-      const card = document.createElement("div");
-      card.className = "vertex-cert-card";
-
-      card.innerHTML = `
-        <h3>${row.Name || "No Name"}</h3>
-        <p><strong>Business:</strong> ${row.Business || "N/A"}</p>
-        <p><strong>Certification:</strong> ${row.Certification || "N/A"}</p>
-        <p><strong>Issue Date:</strong> ${row.Issue || "N/A"}</p>
-        <p><strong>Expire Date:</strong> ${row.Expire || "N/A"}</p>
-        <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
-        <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
-      `;
-
-      resultsContainer.appendChild(card);
-    });
-  }
-
-  searchInput.addEventListener("input", (e) => {
-    const query = e.target.value.trim().toLowerCase();
-    if (!query) {
-      resultsContainer.innerHTML = "<p>Enter search terms above to find certifications.</p>";
-      return;
-    }
-    const filtered = allRecords
-      .map(mapRecordToCertData)
-      .filter(row =>
-        Object.values(row).some(val => val.toLowerCase().includes(query))
-      );
-
+    const filtered = allRecords.filter(row =>
+      Object.values(row).some(
+        val => val && val.toLowerCase().includes(query)
+      )
+    );
     renderTable(filtered);
   });
-
-  (async () => {
-    resultsContainer.innerHTML = "<p>Loading certifications...</p>";
-    allRecords = await loadAllRecords();
-    resultsContainer.innerHTML = "<p>Enter search terms above to find certifications.</p>";
-  })();
 });
