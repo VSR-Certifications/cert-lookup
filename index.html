@@ -1,57 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Certification Lookup</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>Certification Lookup</h1>
-  <input type="text" id="search" placeholder="Search by Name, ID, or Certification..." />
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search certifications...">
+  </div>
 
-  <table id="certTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Business</th>
-        <th>Certification</th>
-        <th>Issue</th>
-        <th>Expire</th>
-        <th>In House Instructor</th>
-        <th>ID</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Rows inserted by JS -->
-    </tbody>
-  </table>
+  <div id="cardContainer" class="card-container">
+    <!-- Cards will be populated by script.js -->
+  </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>
