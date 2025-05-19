@@ -8,13 +8,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const tableBody = document.querySelector("#certTable tbody");
 
       let certData = entries.map(row => ({
-        Name: row.gsx$Name?.$t || "",
-        Business: row.gsx$Business?.$t || "",
-        Certification: row.gsx$Certification?.$t || "",
-        Issue: row.gsx$Issue?.$t || "",
-        Expire: row.gsx$Expire?.$t || "",
-        Instructor: row.gsx$Instructor?.$t || "",
-        ID: row.gsx$ID?.$t || ""
+        name: row.gsx$name?.$t || "",
+        business: row.gsx$business?.$t || "",
+        certification: row.gsx$certification?.$t || "",
+        issue: row.gsx$issue?.$t || "",
+        expire: row.gsx$expire?.$t || "",
+        instructor: row.gsx$instructor?.$t || "",
+        id: row.gsx$id?.$t || ""
       }));
 
       function renderTable(data) {
@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
         data.forEach(row => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${row.Name}</td>
-            <td>${row.Business}</td>
-            <td>${row.Certification}</td>
-            <td>${row.Issue}</td>
-            <td>${row.Expire}</td>
-            <td>${row.Instructor}</td>
-            <td>${row.ID}</td>
+            <td>${row.name}</td>
+            <td>${row.business}</td>
+            <td>${row.certification}</td>
+            <td>${row.issue}</td>
+            <td>${row.expire}</td>
+            <td>${row.instructor}</td>
+            <td>${row.id}</td>
           `;
           tableBody.appendChild(tr);
         });
