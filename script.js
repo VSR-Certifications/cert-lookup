@@ -1,50 +1,46 @@
-document.addEventListener("DOMContentLoaded", function () {
-const sheetUrl = "https://spreadsheets.google.com/feeds/list/1ecT0U_26RPYXRNmFw5tPGB0iYDSHavhSE5OJ57_Z6s0/od6/public/values?alt=json";
+const airtableToken = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";  // <-- Put your new token here
+const baseId = "appkOBvixsfRHT7UM";
+const tableName = "Table 1";
 
-  fetch(sheetUrl)
-    .then(response => response.json())
-    .then(data => {
-      const entries = data.feed.entry;
-      const tableBody = document.querySelector("#certTable tbody");
+fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+  headers: {
+    Authorization: `Bearer ${airtableToken}`
+  }
+})
+  .then(res => res.json())
+  .then(data => {
+    const records = data.records.map(r => r.fields);
+    const tableBody = document.querySelector("#certTable tbody");
 
-      let certData = entries.map(row => ({
-        Name: row.gsx$name?.$t || "",
-        Business: row.gsx$business?.$t || "",
-        Certification: row.gsx$certification?.$t || "",
-        Issue: row.gsx$issue?.$t || "",
-        Expire: row.gsx$expire?.$t || "",
-        Instructor: row.gsx$instructor?.$t || "",
-        ID: row.gsx$id?.$t || ""
-      }));
-
-      function renderTable(data) {
-        tableBody.innerHTML = "";
-        data.forEach(row => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${row.name}</td>
-            <td>${row.business}</td>
-            <td>${row.certification}</td>
-            <td>${row.issue}</td>
-            <td>${row.expire}</td>
-            <td>${row.instructor}</td>
-            <td>${row.id}</td>
-          `;
-          tableBody.appendChild(tr);
-        });
-      }
-
-      renderTable(certData);
-
-      document.getElementById("search").addEventListener("input", e => {
-        const query = e.target.value.toLowerCase();
-        const filtered = certData.filter(row =>
-          Object.values(row).some(val => val.toLowerCase().includes(query))
-        );
-        renderTable(filtered);
+    function renderTable(data) {
+      tableBody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.Name || ""}</td>
+          <td>${row.Business || ""}</td>
+          <td>${row.Certification || ""}</td>
+          <td>${row.Issue || ""}</td>
+          <td>${row.Expire || ""}</td>
+          <td>${row.Instructor || ""}</td>
+          <td>${row.ID || ""}</td>
+        `;
+        tableBody.appendChild(tr);
       });
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error);
+    }
+
+    renderTable(records);
+
+    document.getElementById("search").addEventListener("input", e => {
+      const query = e.target.value.toLowerCase();
+      const filtered = records.filter(row =>
+        Object.values(row).some(
+          val => val && val.toLowerCase().includes(query)
+        )
+      );
+      renderTable(filtered);
     });
-});
+  })
+  .catch(error => {
+    console.error("Error fetching data:", error);
+  });
