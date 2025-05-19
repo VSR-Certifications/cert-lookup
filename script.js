@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const cardContainer = document.getElementById("cardContainer");
   const searchInput = document.getElementById("search");
 
-  // Replace with your actual Airtable values
   const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
   const AIRTABLE_TABLE_NAME = "Table 1";
   const AIRTABLE_TOKEN = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
@@ -28,11 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
     cardContainer.innerHTML = "";
 
     if (data.length === 0) {
-      // Optionally show a "No results" message when searching but no matches found
       if (searchInput.value.trim() !== "") {
         cardContainer.innerHTML = "<p>No matching certifications found.</p>";
       }
-      // If search box empty, show nothing
       return;
     }
 
@@ -42,10 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
       card.className = "cert-card";
       card.innerHTML = `
         <h3>${fields.Name || "No Name"}</h3>
-        <p><strong>Business:</strong> ${fields.Business || ""}</p>
         <p><strong>Certification:</strong> ${fields.Certification || ""}</p>
-        <p><strong>Issue Date:</strong> ${fields.Issue || ""}</p>
-        <p><strong>Expiration Date:</strong> ${fields.Expire || ""}</p>
+        <p><strong>Certification Standing:</strong> ${fields.Status || ""}</p>
         <p><strong>In House Instructor:</strong> ${fields["In House Instructor"] || ""}</p>
         <p><strong>ID:</strong> ${fields.ID || ""}</p>
       `;
@@ -63,14 +58,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchRecords().then(records => {
-    // Start with no cards shown
     renderCards([]);
 
     searchInput.addEventListener("input", () => {
       const query = searchInput.value.trim();
 
       if (query === "") {
-        renderCards([]); // Clear cards if input is empty
+        renderCards([]);
       } else {
         const filtered = filterCards(query, records);
         renderCards(filtered);
