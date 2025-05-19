@@ -92,9 +92,21 @@
 
 <h1>Certification Lookup</h1>
 
-<input type="text" id="vertex-search" placeholder="Search certifications..." />
+<!-- Search input -->
+<input
+  type="text"
+  id="vertex-search"
+  placeholder="Search certifications..."
+  style="padding: 8px; width: 100%; max-width: 400px; margin-bottom: 20px;"
+/>
 
-<div id="vertex-resultsContainer"><p>Enter search terms above to find certifications.</p></div>
+<!-- Container where results will show as cards -->
+<div
+  id="vertex-resultsContainer"
+  style="display: flex; flex-wrap: wrap; gap: 20px;"
+>
+  <p>Enter search terms above to find certifications.</p>
+</div>
 
 <!-- Popup Modal -->
 <div id="popupModal" class="popup-modal" role="dialog" aria-modal="true" aria-labelledby="popupTitle" tabindex="-1">
