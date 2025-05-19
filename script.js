@@ -28,7 +28,11 @@ document.addEventListener("DOMContentLoaded", function () {
     cardContainer.innerHTML = "";
 
     if (data.length === 0) {
-      cardContainer.innerHTML = "<p>No matching certifications found.</p>";
+      // Optionally show a "No results" message when searching but no matches found
+      if (searchInput.value.trim() !== "") {
+        cardContainer.innerHTML = "<p>No matching certifications found.</p>";
+      }
+      // If search box empty, show nothing
       return;
     }
 
@@ -59,8 +63,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchRecords().then(records => {
-    // Initially show nothing
+    // Start with no cards shown
     renderCards([]);
 
     searchInput.addEventListener("input", () => {
-      const query =
+      const query = searchInput.value.trim();
+
+      if (query === "") {
+        renderCards([]); // Clear cards if input is empty
+      } else {
+        const filtered = filterCards(query, records);
+        renderCards(filtered);
+      }
+    });
+  }).catch(error => {
+    cardContainer.innerHTML = "<p>Error loading data.</p>";
+    console.error(error);
+  });
+});
