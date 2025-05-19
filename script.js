@@ -18,7 +18,7 @@ function fetchPage(offset = "") {
     .then(data => {
       allRecords.push(...data.records.map(r => r.fields));
       if (data.offset) {
-        return fetchPage(data.offset); // recursive fetch next page
+        return fetchPage(data.offset);
       }
     });
 }
