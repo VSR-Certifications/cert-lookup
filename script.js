@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
   const AIRTABLE_TABLE_NAME = "Table 1";
-  const AIRTABLE_API_KEY = "keyh12f4j0FAZl15E"; // Keep your keys secret in real deployments!
+  const AIRTABLE_API_KEY = "keyh12f4j0FAZl15E";
+
   const AIRTABLE_ENDPOINT = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`;
 
-  const resultsContainer = document.getElementById("resultsContainer");
-  const searchInput = document.getElementById("search");
+  const resultsContainer = document.getElementById("vertex-resultsContainer");
+  const searchInput = document.getElementById("vertex-search");
 
   let allRecords = [];
 
-  // Fetch all Airtable records with pagination
   async function fetchRecords(offset) {
     let url = AIRTABLE_ENDPOINT + "?pageSize=100";
     if (offset) url += `&offset=${offset}`;
@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Render cards in the container
   function renderTable(data) {
     resultsContainer.innerHTML = "";
 
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     data.forEach(row => {
       const card = document.createElement("div");
-      card.className = "cert-card";
+      card.className = "vertex-cert-card";
 
       card.innerHTML = `
         <h3>${row.Name || "No Name"}</h3>
@@ -76,49 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Expire Date:</strong> ${row.Expire || "N/A"}</p>
         <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
         <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
-        <button class="details-btn" aria-label="View details for ${row.Name}">View Details</button>
       `;
 
       resultsContainer.appendChild(card);
-
-      card.querySelector(".details-btn").addEventListener("click", () => {
-        openPopup(row);
-      });
     });
   }
 
-  // Popup modal functions
-  const modal = document.getElementById("popupModal");
-  const popupDetails = document.getElementById("popupDetails");
-  const closePopupBtn = document.getElementById("closePopup");
-
-  function openPopup(data) {
-    popupDetails.innerHTML = `
-      <h2 id="popupTitle">${data.Name || "No Name"}</h2>
-      <p><strong>Business:</strong> ${data.Business || "N/A"}</p>
-      <p><strong>Certification:</strong> ${data.Certification || "N/A"}</p>
-      <p><strong>Issue Date:</strong> ${data.Issue || "N/A"}</p>
-      <p><strong>Expire Date:</strong> ${data.Expire || "N/A"}</p>
-      <p><strong>In House Instructor:</strong> ${data["In House Instructor"] || "N/A"}</p>
-      <p><strong>ID:</strong> ${data.ID || "N/A"}</p>
-    `;
-    modal.style.display = "flex";
-    modal.focus();
-  }
-
-  function closePopup() {
-    modal.style.display = "none";
-  }
-
-  closePopupBtn.addEventListener("click", closePopup);
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      closePopup();
-    }
-  });
-
-  // Search function
   searchInput.addEventListener("input", (e) => {
     const query = e.target.value.trim().toLowerCase();
     if (!query) {
@@ -134,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTable(filtered);
   });
 
-  // Initial load
   (async () => {
     resultsContainer.innerHTML = "<p>Loading certifications...</p>";
     allRecords = await loadAllRecords();
