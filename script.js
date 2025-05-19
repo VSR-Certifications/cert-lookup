@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       card.innerHTML = `
         <h3>${fields.Name || "No Name"}</h3>
         <p><strong>Certification:</strong> ${fields.Certification || ""}</p>
-        <p><strong>Certification Standing:</strong> ${fields.Status || ""}</p>
+        <p><strong>Status:</strong> ${fields.Status || ""}</p>
         <p><strong>In House Instructor:</strong> ${fields["In House Instructor"] || ""}</p>
         <p><strong>ID:</strong> ${fields.ID || ""}</p>
       `;
@@ -58,13 +58,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchRecords().then(records => {
-    renderCards([]);
+    renderCards([]); // Initially render nothing
 
     searchInput.addEventListener("input", () => {
       const query = searchInput.value.trim();
 
       if (query === "") {
-        renderCards([]);
+        renderCards([]); // Hide cards if input is empty
       } else {
         const filtered = filterCards(query, records);
         renderCards(filtered);
