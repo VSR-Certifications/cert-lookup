@@ -59,14 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchRecords().then(records => {
+    // Initially show nothing
     renderCards([]);
 
     searchInput.addEventListener("input", () => {
-      const filtered = filterCards(searchInput.value, records);
-      renderCards(filtered);
-    });
-  }).catch(error => {
-    cardContainer.innerHTML = "<p>Error loading data.</p>";
-    console.error(error);
-  });
-});
+      const query =
