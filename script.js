@@ -1,77 +1,82 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const cardContainer = document.getElementById("cardContainer");
+  const airtableBaseId = "appkOBvixsfRHT7UM";
+  const airtableTableName = "Table 1";
+  const airtableToken = "patjaXxpB8K1RxXq1.73ec45c91ecf8626150e77f777ecab84841d1ccfd85158b38153486590ac32fc";
+
   const searchInput = document.getElementById("search");
+  const cardContainer = document.getElementById("cardContainer");
 
-  const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
-  const AIRTABLE_TABLE_NAME = "Table 1";
-  const AIRTABLE_TOKEN = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
+  async function fetchData() {
+    const url = `https://api.airtable.com/v0/${airtableBaseId}/${encodeURIComponent(airtableTableName)}?pageSize=100`;
 
-  async function fetchRecords() {
-    let allRecords = [];
-    let offset = "";
-    do {
-      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?pageSize=100&offset=${offset}`;
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${AIRTABLE_TOKEN}`
-        }
-      });
-      const data = await response.json();
-      allRecords.push(...data.records);
-      offset = data.offset || "";
-    } while (offset);
-    return allRecords;
+    let records = [];
+    let offset = null;
+
+    try {
+      do {
+        const response = await fetch(`${url}${offset ? `&offset=${offset}` : ""}`, {
+          headers: {
+            Authorization: `Bearer ${airtableToken}`
+          }
+        });
+
+        const data = await response.json();
+        records = records.concat(data.records);
+        offset = data.offset;
+      } while (offset);
+
+      return records.map(record => record.fields);
+    } catch (error) {
+      console.error("Error fetching Airtable data:", error);
+      return [];
+    }
   }
 
   function renderCards(data) {
     cardContainer.innerHTML = "";
 
     if (data.length === 0) {
-      if (searchInput.value.trim() !== "") {
-        cardContainer.innerHTML = "<p>No matching certifications found.</p>";
-      }
+      cardContainer.innerHTML = "<p style='text-align:center;'>No results found.</p>";
       return;
     }
 
-    data.forEach(record => {
-      const fields = record.fields;
+    data.forEach(row => {
       const card = document.createElement("div");
       card.className = "cert-card";
       card.innerHTML = `
-        <h3>${fields.Name || "No Name"}</h3>
-        <p><strong>Certification:</strong> ${fields.Certification || ""}</p>
-        <p><strong>Status:</strong> ${fields.Status || ""}</p>
-        <p><strong>In House Instructor:</strong> ${fields["In House Instructor"] || ""}</p>
-        <p><strong>ID:</strong> ${fields.ID || ""}</p>
+        <h3>${row.Name || "No Name"}</h3>
+        <p><strong>Certification:</strong> ${row.Certification || "N/A"}</p>
+        <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
+        <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
+        <p><strong>Status:</strong> ${row.Status || "N/A"}</p>
       `;
       cardContainer.appendChild(card);
     });
   }
 
-  function filterCards(query, records) {
-    query = query.toLowerCase();
-    return records.filter(record =>
-      Object.values(record.fields).some(val =>
-        typeof val === "string" && val.toLowerCase().includes(query)
-      )
+  fetchData().then(certData => {
+    const validData = certData.filter(row =>
+      row.Status && row.Status.toLowerCase() === "valid"
     );
-  }
 
-  fetchRecords().then(records => {
-    renderCards([]); // Initially render nothing
+    renderCards([]);
 
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.trim();
+    searchInput.addEventListener("input", e => {
+      const query = e.target.value.toLowerCase().trim();
 
       if (query === "") {
-        renderCards([]); // Hide cards if input is empty
-      } else {
-        const filtered = filterCards(query, records);
-        renderCards(filtered);
+        renderCards([]);
+        return;
       }
+
+      const filtered = validData.filter(row =>
+        (row.Name && row.Name.toLowerCase().includes(query)) ||
+        (row.Certification && row.Certification.toLowerCase().includes(query)) ||
+        (row.ID && row.ID.toLowerCase().includes(query)) ||
+        (row["In House Instructor"] && row["In House Instructor"].toLowerCase().includes(query))
+      );
+
+      renderCards(filtered);
     });
-  }).catch(error => {
-    cardContainer.innerHTML = "<p>Error loading data.</p>";
-    console.error(error);
   });
 });
