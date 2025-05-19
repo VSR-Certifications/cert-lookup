@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Replace with your actual Airtable values
   const AIRTABLE_BASE_ID = "appkOBvixsfRHT7UM";
   const AIRTABLE_TABLE_NAME = "Table 1";
-  const AIRTABLE_TOKEN = "patREPLACE_THIS_WITH_YOURS";
+  const AIRTABLE_TOKEN = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
 
   async function fetchRecords() {
     let allRecords = [];
