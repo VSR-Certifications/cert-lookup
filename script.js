@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-const sheetUrl = "https://spreadsheets.google.com/feeds/list/1ecT0U_26RPYXRNmFw5tPGB0iYDSHavhSE5OJ57_Z6s0/od6/public/values?alt=json";
+const sheetUrl = "https://spreadsheets.google.com/feeds/list/1ecT0U_26RPYXRNmFw5tPGB0iYDSHavhSE5OJ57_Z6s0/1/public/values?alt=json";
 
   fetch(sheetUrl)
     .then(response => response.json())
