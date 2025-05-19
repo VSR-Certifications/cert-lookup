@@ -8,13 +8,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const tableBody = document.querySelector("#certTable tbody");
 
       let certData = entries.map(row => ({
-        name: row.gsx$name?.$t || "",
-        business: row.gsx$business?.$t || "",
-        certification: row.gsx$certification?.$t || "",
-        issue: row.gsx$issue?.$t || "",
-        expire: row.gsx$expire?.$t || "",
-        instructor: row.gsx$instructor?.$t || "",
-        id: row.gsx$id?.$t || ""
+        Name: row.gsx$name?.$t || "",
+        Business: row.gsx$business?.$t || "",
+        Certification: row.gsx$certification?.$t || "",
+        Issue: row.gsx$issue?.$t || "",
+        Expire: row.gsx$expire?.$t || "",
+        Instructor: row.gsx$instructor?.$t || "",
+        ID: row.gsx$id?.$t || ""
       }));
 
       function renderTable(data) {
