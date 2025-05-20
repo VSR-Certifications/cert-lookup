@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const apiKey = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
   const baseId = "appkOBvixsfRHT7UM";
-  const tableName = "Table%201";
+  const tableName = "Table 1";
   const url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100`;
 
   const headers = {
