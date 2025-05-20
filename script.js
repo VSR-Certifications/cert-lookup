@@ -1,83 +1,54 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const airtableBaseId = "appkOBvixsfRHT7UM";
-  const airtableTableName = "Table 1";
-  const airtableToken = "patjaXxpB8K1RxXq1.73ec45c91ecf8626150e77f777ecab84841d1ccfd85158b38153486590ac32fc";
+  const apiKey = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
+  const baseId = "appkOBvixsfRHT7UM";
+  const tableName = "Table%201";
+  const url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100`;
 
-  const searchInput = document.getElementById("search");
-  const cardContainer = document.getElementById("cardContainer");
+  const headers = {
+    Authorization: `Bearer ${apiKey}`
+  };
 
-  async function fetchData() {
-    const url = `https://api.airtable.com/v0/${airtableBaseId}/${encodeURIComponent(airtableTableName)}?pageSize=100`;
+  fetch(url, { headers })
+    .then(response => response.json())
+    .then(data => {
+      const allRecords = data.records.map(record => record.fields);
+      const validRecords = allRecords.filter(record => record.Status === "Valid");
 
-    let records = [];
-    let offset = null;
+      const cardContainer = document.getElementById("cardContainer");
+      const searchInput = document.getElementById("search");
 
-    try {
-      do {
-        const response = await fetch(`${url}${offset ? `&offset=${offset}` : ""}`, {
-          headers: {
-            Authorization: `Bearer ${airtableToken}`
-          }
+      function renderCards(records) {
+        cardContainer.innerHTML = "";
+        if (records.length === 0) return;
+
+        records.forEach(record => {
+          const card = document.createElement("div");
+          card.className = "cert-card";
+          card.innerHTML = `
+            <h3>${record.Name || "No Name"}</h3>
+            <p><strong>Business:</strong> ${record.Business || "N/A"}</p>
+            <p><strong>Certification:</strong> ${record.Certification || "N/A"}</p>
+            <p><strong>Status:</strong> ${record.Status || "N/A"}</p>
+            <p><strong>In House Instructor:</strong> ${record["In House Instructor"] || "N/A"}</p>
+            <p><strong>ID:</strong> ${record.ID || "N/A"}</p>
+          `;
+          cardContainer.appendChild(card);
         });
-
-        const data = await response.json();
-        records = records.concat(data.records);
-        offset = data.offset;
-      } while (offset);
-
-      return records.map(record => record.fields);
-    } catch (error) {
-      console.error("Error fetching Airtable data:", error);
-      return [];
-    }
-  }
-
-  function renderCards(data) {
-    cardContainer.innerHTML = "";
-
-    if (data.length === 0) {
-      cardContainer.innerHTML = "<p style='text-align:center;'>No results found.</p>";
-      return;
-    }
-
-    data.forEach(row => {
-      const card = document.createElement("div");
-      card.className = "cert-card";
-      card.innerHTML = `
-        <h3>${row.Name || "No Name"}</h3>
-        <p><strong>Business:</strong> ${record.Business || "N/A"}</p>
-        <p><strong>Certification:</strong> ${row.Certification || "N/A"}</p>
-        <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
-        <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
-        <p><strong>Status:</strong> ${row.Status || "N/A"}</p>
-      `;
-      cardContainer.appendChild(card);
-    });
-  }
-
-  fetchData().then(certData => {
-    const validData = certData.filter(row =>
-      row.Status && row.Status.toLowerCase() === "valid"
-    );
-
-    renderCards([]);
-
-    searchInput.addEventListener("input", e => {
-      const query = e.target.value.toLowerCase().trim();
-
-      if (query === "") {
-        renderCards([]);
-        return;
       }
 
-      const filtered = validData.filter(row =>
-        (row.Name && row.Name.toLowerCase().includes(query)) ||
-        (row.Certification && row.Certification.toLowerCase().includes(query)) ||
-        (row.ID && row.ID.toLowerCase().includes(query)) ||
-        (row["In House Instructor"] && row["In House Instructor"].toLowerCase().includes(query))
-      );
+      renderCards(validRecords);
 
-      renderCards(filtered);
+      searchInput.addEventListener("input", e => {
+        const query = e.target.value.toLowerCase();
+        const filtered = validRecords.filter(record =>
+          Object.values(record).some(val =>
+            typeof val === "string" && val.toLowerCase().includes(query)
+          )
+        );
+        renderCards(filtered);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching data:", error);
     });
-  });
 });
