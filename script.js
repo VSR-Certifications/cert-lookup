@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
       card.className = "cert-card";
       card.innerHTML = `
         <h3>${row.Name || "No Name"}</h3>
+        <p><strong>Business:</strong> ${record.Business || "N/A"}</p>
         <p><strong>Certification:</strong> ${row.Certification || "N/A"}</p>
         <p><strong>In House Instructor:</strong> ${row["In House Instructor"] || "N/A"}</p>
         <p><strong>ID:</strong> ${row.ID || "N/A"}</p>
