@@ -9,23 +9,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("search");
   const cardContainer = document.getElementById("cardContainer");
 
-  async function fetchAllRecords() {
-    let allRecords = [];
-    let offset = "";
-    let url;
+async function fetchAllRecords() {
+  // Replace this with your actual Airtable shared view link:
+  const url = "YOUR_AIRTABLE_VIEWER_LINK?format=json";
 
-    do {
-      url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
-      const response = await fetch(url, { headers });
-      const data = await response.json();
-      const records = data.records.map(record => record.fields);
-      allRecords = allRecords.concat(records);
-      offset = data.offset;
-    } while (offset);
+  const response = await fetch(url);
+  const data = await response.json();
 
-    return allRecords;
-  }
+  // The shared view JSON stores records differently than the API:
+  const records = data.records.map(r => r.fields);
 
+  return records;
+}
   function renderCards(records) {
     cardContainer.innerHTML = "";
     if (records.length === 0) return;
