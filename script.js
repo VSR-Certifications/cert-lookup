@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "pat18cgn80tsiKYrv"; 
+  const apiKey = "patjaXxpB8K1RxXq1.ebaec54e36bbcc44dccaca9a2fae1279b43a359d4156b7cf9e4c5e3b4ca52750";
   const baseId = "appkOBvixsfRHT7UM";
   const tableName = "Table 1";
-
   const headers = {
     Authorization: `Bearer ${apiKey}`
   };
@@ -70,4 +69,4 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => {
       console.error("Error fetching data:", error);
     });
-});ct.values(record).some(val =>
+});
