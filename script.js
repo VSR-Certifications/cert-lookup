@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "YOUR_API_KEY";
+  const apiKey = "YOUR_API_KEY_HERE"; // We'll fix this next
   const baseId = "appkOBvixsfRHT7UM";
   const tableName = "Table 1";
   const headers = {
@@ -59,15 +59,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filtered = validRecords.filter(record =>
           Object.values(record).some(val =>
-            typeof val === "string" && val.toLowerCase().includes(query)
-          )
-        );
-
-        renderCards(filtered);
-      });
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error);
-    });
-});
-``
