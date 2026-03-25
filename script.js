@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "pat18cgn80tsiKYrv.9b9f59fb09046b5326c60e38994b75b3980b224f84f172dc63218707c4d1f3d6";
+  const apiKey = "pat18cgn80tsiKYrv";
   const baseId = "appkOBvixsfRHT7UM";
   const tableName = "Table 1";
   const headers = {
