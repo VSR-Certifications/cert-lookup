@@ -17,7 +17,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/airtable@0.12.0/build/airtable.min.js"></script>
   <script>
-    const base = new Airtable({apiKey: 'YOUR_TOKEN_HERE'}).base('appkOBvixsfRHT7UM');
+    const base = new Airtable({apiKey: 'pat18cgn80tsiKYrv'}).base('appkOBvixsfRHT7UM');
 
     function searchCert() {
       const term = document.getElementById('search').value.trim().toLowerCase();
