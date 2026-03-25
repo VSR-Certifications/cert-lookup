@@ -1,67 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Validate Certification</title>
+  <title>Certification Lookup</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f8f9fa;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-
-    #search {
-      display: block;
-      margin: 20px auto;
-      padding: 10px;
-      width: 80%;
-      max-width: 400px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    #cardContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .cert-card {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      width: 280px;
-      transition: transform 0.2s;
-    }
-
-    .cert-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .cert-card h3 {
-      margin-top: 0;
-      color: #007bff;
-    }
-
-    .cert-card p {
-      margin: 6px 0;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f8f8; }
+    #search { width: 100%; padding: 15px; font-size: 18px; border: 2px solid #007bff; border-radius: 8px; box-sizing: border-box; }
+    .result { background: white; border: 1px solid #ddd; padding: 15px; margin: 12px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .result strong { font-size: 1.1em; color: #007bff; }
   </style>
 </head>
 <body>
-  <h1>Validate Certification</h1>
-  <input type="text" id="search" placeholder="Search by name, ID, or keyword..." />
-  <div id="cardContainer"></div>
 
+  <input type="text" id="search" placeholder="Search by name, business, or certification..." onkeyup="searchCert()">
+
+  <div id="results"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/airtable@0.12.0/build/airtable.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
