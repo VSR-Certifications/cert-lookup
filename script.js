@@ -1,23 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const apiKey = "YOUR_API_KEY";
+  const baseId = "appkOBvixsfRHT7UM";
+  const tableName = "Table 1";
+  const headers = {
+    Authorization: `Bearer ${apiKey}`
+  };
 
   const searchInput = document.getElementById("search");
   const cardContainer = document.getElementById("cardContainer");
 
-  // ✅ Use Airtable Shared View JSON (safe, no API key required)
-  const sharedViewUrl = "https://airtable.com/appkOBvixsfRHT7UM/shrNrSQj2befv1DLl?format=json";
-
-  // ✅ Fetch data from shared view
   async function fetchAllRecords() {
-    const response = await fetch(sharedViewUrl);
-    const data = await response.json();
+    let allRecords = [];
+    let offset = "";
+    let url;
 
-    // Shared view returns records with `.records`
-    const records = data.records.map(r => r.fields);
+    do {
+      url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
+      const response = await fetch(url, { headers });
+      const data = await response.json();
+      const records = data.records.map(record => record.fields);
+      allRecords = allRecords.concat(records);
+      offset = data.offset;
+    } while (offset);
 
-    return records;
+    return allRecords;
   }
 
-  // ✅ Render cards
   function renderCards(records) {
     cardContainer.innerHTML = "";
     if (records.length === 0) return;
@@ -25,29 +33,20 @@ document.addEventListener("DOMContentLoaded", function () {
     records.forEach(record => {
       const card = document.createElement("div");
       card.className = "cert-card";
-
-      // ✅ Get photo URL
-      const photoUrl = record["Certificate Holder Photo"]
-        ? record["Certificate Holder Photo"][0].url
-        : null;
-
       card.innerHTML = `
-        ${photoUrl ? `<img src="${photoUrl}" class="cert-photo" alt=" "No Name"}</h3>
+        <h3>${record.Name || "No Name"}</h3>
         <p><strong>Business:</strong> ${record.Business || "N/A"}</p>
         <p><strong>Certification:</strong> ${record.Certification || "N/A"}</p>
         <p><strong>Status:</strong> ${record.Status || "N/A"}</p>
         <p><strong>In House Instructor:</strong> ${record["In House Instructor"] || "N/A"}</p>
         <p><strong>ID:</strong> ${record.ID || "N/A"}</p>
       `;
-
       cardContainer.appendChild(card);
     });
   }
 
-  // ✅ Load and filter records
   fetchAllRecords()
     .then(allRecords => {
-      // Only show valid certifications
       const validRecords = allRecords.filter(record => record.Status === "Valid");
 
       searchInput.addEventListener("input", e => {
@@ -70,5 +69,5 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => {
       console.error("Error fetching data:", error);
     });
-
 });
+``
