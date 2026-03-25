@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const DATA_URL = "https://airtableusercontent.com/XWlYbXxR05lzGq?format=json";
+  const DATA_URL = "https://airtable.com/appkOBvixsfRHT7UM/shrXWlYbXxRO5lzGq";
 
   const searchInput = document.getElementById("search");
   const cardContainer = document.getElementById("cardContainer");
