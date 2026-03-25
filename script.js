@@ -1,38 +1,23 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "pat18cgn80tsiKYrv";
-  const baseId = "appkOBvixsfRHT7UM";
-  const tableName = "Table 1";
-  const headers = {
-    Authorization: `Bearer ${apiKey}`
-  };
+document.addEventListener("DOMContentLoaded", () => {
+  const DATA_URL = "https://airtable.com/appkOBvixsfRHT7UM/shrXWlYbXxRO5lzGq?format=json";
 
   const searchInput = document.getElementById("search");
   const cardContainer = document.getElementById("cardContainer");
 
-  async function fetchAllRecords() {
-    let allRecords = [];
-    let offset = "";
-    let url;
-
-    do {
-      url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
-      const response = await fetch(url, { headers });
-      const data = await response.json();
-      const records = data.records.map(record => record.fields);
-      allRecords = allRecords.concat(records);
-      offset = data.offset;
-    } while (offset);
-
-    return allRecords;
+  async function fetchRecords() {
+    const response = await fetch(DATA_URL);
+    const data = await response.json();
+    return data.records.map(r => r.fields);
   }
 
   function renderCards(records) {
     cardContainer.innerHTML = "";
-    if (records.length === 0) return;
+    if (!records.length) return;
 
     records.forEach(record => {
       const card = document.createElement("div");
       card.className = "cert-card";
+
       card.innerHTML = `
         <h3>${record.Name || "No Name"}</h3>
         <p><strong>Business:</strong> ${record.Business || "N/A"}</p>
@@ -41,32 +26,32 @@ document.addEventListener("DOMContentLoaded", function () {
         <p><strong>In House Instructor:</strong> ${record["In House Instructor"] || "N/A"}</p>
         <p><strong>ID:</strong> ${record.ID || "N/A"}</p>
       `;
+
       cardContainer.appendChild(card);
     });
   }
 
-  fetchAllRecords()
-    .then(allRecords => {
-      const validRecords = allRecords.filter(record => record.Status === "Valid");
-
+  fetchRecords()
+    .then(records => {
       searchInput.addEventListener("input", e => {
         const query = e.target.value.toLowerCase().trim();
 
-        if (query === "") {
+        if (!query) {
           cardContainer.innerHTML = "";
           return;
         }
 
-        const filtered = validRecords.filter(record =>
-          Object.values(record).some(val =>
-            typeof val === "string" && val.toLowerCase().includes(query)
+        const filtered = records.filter(record =>
+          Object.values(record).some(
+            val => typeof val === "string" && val.toLowerCase().includes(query)
           )
         );
 
         renderCards(filtered);
       });
     })
-    .catch(error => {
-      console.error("Error fetching data:", error);
+    .catch(err => {
+      console.error("Lookup error:", err);
     });
 });
+``
