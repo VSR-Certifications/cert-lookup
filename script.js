@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "pat18cgn80tsiKYrv";
+  const apiKey = "pat18cgn80tsiKYrv"; 
   const baseId = "appkOBvixsfRHT7UM";
   const tableName = "Table 1";
+
   const headers = {
     Authorization: `Bearer ${apiKey}`
   };
@@ -59,3 +60,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filtered = validRecords.filter(record =>
           Object.values(record).some(val =>
+            typeof val === "string" && val.toLowerCase().includes(query)
+          )
+        );
+
+        renderCards(filtered);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching data:", error);
+    });
+});ct.values(record).some(val =>
