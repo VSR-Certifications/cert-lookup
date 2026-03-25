@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function fetchAllRecords() {
   // Replace this with your actual Airtable shared view link:
-  const url = "YOUR_AIRTABLE_VIEWER_LINK?format=json";
+  const url = "https://airtable.com/invite/l?inviteId=inv4o14HxMwS3dImc&inviteToken=30be8c3ba04436b892f0ecf7147f9d6f8be2204b1adb55f47ee0a35608bc8b9e&utm_medium=email&utm_source=product_team&utm_content=transactional-alerts?format=json";
 
   const response = await fetch(url);
   const data = await response.json();
