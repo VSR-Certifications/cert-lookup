@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
- const apiKey = GITHUB_ENV.AIRTABLE_TOKEN;
   const baseId = "appkOBvixsfRHT7UM";
   const tableName = "Table 1";
-  const headers = {
-    Authorization: `Bearer ${apiKey}`
+     Authorization: `Bearer ${apiKey}`
   };
 
   const searchInput = document.getElementById("search");
